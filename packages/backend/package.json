@@ -1,0 +1,111 @@
+{
+  "name": "@the-read/backend",
+  "version": "0.0.1",
+  "description": "",
+  "author": "",
+  "private": true,
+  "license": "UNLICENSED",
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.build.json --noEmit",
+    "lint": "eslint \"{src,test}/**/*.ts\"",
+    "test": "jest",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate deploy",
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@nestjs/common": "11.1.17",
+    "@nestjs/config": "4.0.4",
+    "@nestjs/core": "11.1.28",
+    "@nestjs/jwt": "11.0.2",
+    "@nestjs/mapped-types": "2.1.0",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-express": "11.1.28",
+    "@nestjs/throttler": "6.5.0",
+    "@prisma/adapter-pg": "7.9.0",
+    "@prisma/client": "7.9.0",
+    "@types/bcrypt": "6.0.0",
+    "@types/multer": "2.1.0",
+    "@types/passport-jwt": "4.0.1",
+    "@types/pg": "8.20.0",
+    "@types/sanitize-html": "2.16.1",
+    "bcrypt": "6.0.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.4",
+    "cloudinary": "2.10.0",
+    "dotenv": "17.4.1",
+    "helmet": "8.2.0",
+    "passport": "0.7.0",
+    "passport-jwt": "4.0.1",
+    "pg": "8.20.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "sanitize-html": "2.17.4",
+    "express": "5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "3.3.5",
+    "@eslint/js": "9.39.4",
+    "@nestjs/testing": "11.1.17",
+    "@types/bcrypt": "6.0.0",
+    "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
+    "@types/node": "22.19.15",
+    "@types/passport-jwt": "4.0.1",
+    "@types/supertest": "6.0.3",
+    "eslint": "9.39.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.5",
+    "globals": "16.5.0",
+    "jest": "30.3.0",
+    "prettier": "3.8.1",
+    "prisma": "7.9.0",
+    "supertest": "7.2.2",
+    "ts-jest": "29.4.6",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.57.2",
+    "tsx": "4.20.6"
+  },
+  "overrides": {
+    "find-my-way": "9.7.0"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "moduleNameMapper": {
+      "^\\./enums\\.js$": "<rootDir>/generated/prisma/enums.ts",
+      "^\\./commonInputTypes\\.js$": "<rootDir>/generated/prisma/commonInputTypes.ts",
+      "^\\./internal/class\\.js$": "<rootDir>/generated/prisma/internal/class.ts",
+      "^\\./internal/prismaNamespace\\.js$": "<rootDir>/generated/prisma/internal/prismaNamespace.ts",
+      "^\\./class\\.js$": "<rootDir>/generated/prisma/internal/class.ts",
+      "^\\.\\./models\\.js$": "<rootDir>/generated/prisma/models.ts",
+      "^\\./models/(User|Contributor|Submission|SubmissionAttachment|EditorialReview|EditorialNote|SubmissionEmail|Blog|Category|Tag|BlogTag|BlogReview|BlogVersion|SavedBlog|Notification|SourceReference|Comment|BlogReport|AuditLog)\\.js$": "<rootDir>/generated/prisma/models/$1.ts"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  },
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "require": "./dist/server.js",
+      "default": "./dist/server.js"
+    }
+  },
+  "files": [
+    "dist"
+  ]
+}
