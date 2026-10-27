@@ -10,6 +10,8 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { RolesGuard } from './common/guards/roles.guard';
 import { RequestLoggingInterceptor } from './common/interceptors/request-logging.interceptor';
+import { PublicReadCache } from './common/cache/public-read-cache';
+import { PublicReadCacheInterceptor } from './common/cache/public-read-cache.interceptor';
 
 type Runtime = { app: INestApplication; server: express.Express };
 let runtime: Promise<Runtime> | undefined;
@@ -37,7 +39,10 @@ export async function createRuntime(): Promise<Runtime> {
     app.setGlobalPrefix('api');
     const reflector = app.get(Reflector);
     app.useGlobalGuards(new JwtAuthGuard(reflector), new RolesGuard(reflector));
-    app.useGlobalInterceptors(new RequestLoggingInterceptor());
+    app.useGlobalInterceptors(
+      new RequestLoggingInterceptor(),
+      new PublicReadCacheInterceptor(reflector, app.get(PublicReadCache)),
+    );
     app.useGlobalPipes(
       new ValidationPipe({
         whitelist: true,

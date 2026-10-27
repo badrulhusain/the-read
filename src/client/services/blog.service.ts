@@ -1,9 +1,9 @@
-import { api, unwrapData, unwrapList } from '@/lib/api';
+import { api, publicGet, unwrapData, unwrapList } from '@/lib/api';
 import { toApiCoverImage } from '@/lib/blog-content';
 import { normalizeBlog } from '@/lib/blog-status';
 import { categoryService } from '@/services/category.service';
 import { tagService } from '@/services/tag.service';
-import type { QueryParams } from '@/types/api';
+import type { PaginatedResponse, QueryParams } from '@/types/api';
 import type { ArticleSeries, Blog, BlogCategory, BlogFormPayload, BlogTag, Contributor, DashboardSummary, ReactionType } from '@/types/blog';
 
 function normalizeSummary(payload: DashboardSummary) {
@@ -19,13 +19,13 @@ export const blogService = {
   },
 
   async listPublished(params: QueryParams) {
-    const { data } = await api.get('/blogs', { params: { limit: 10, ...params } });
+    const { data } = await publicGet<Blog[] | PaginatedResponse<Blog>>('/blogs', { params: { limit: 10, ...params } });
     const result = unwrapList<Blog>(data);
     return { ...result, items: result.items.map(normalizeBlog) };
   },
 
   async getPublishedBySlug(slug: string) {
-    const { data } = await api.get<Blog>(`/blogs/${slug}`);
+    const { data } = await publicGet<Blog>(`/blogs/${slug}`);
     return normalizeBlog(unwrapData<Blog>(data));
   },
 
@@ -87,12 +87,12 @@ export const blogService = {
     return normalizeBlog(unwrapData<Blog>(data));
   },
 
-  async featured() { const { data } = await api.get('/blogs/featured'); return unwrapList<Blog>(data).items.map(normalizeBlog); },
-  async trending() { const { data } = await api.get('/blogs/trending'); return unwrapList<Blog>(data).items.map(normalizeBlog); },
-  async series() { const { data } = await api.get('/series'); return unwrapList<ArticleSeries>(data).items; },
-  async getSeries(slug: string) { const { data } = await api.get(`/series/${slug}`); return unwrapData<ArticleSeries>(data); },
-  async contributors() { const { data } = await api.get('/contributors'); return unwrapList<Contributor>(data).items; },
-  async getContributor(slug: string) { const { data } = await api.get(`/contributors/${slug}`); return unwrapData<Contributor & { articles?: Blog[] }>(data); },
+  async featured() { const { data } = await publicGet<Blog[] | PaginatedResponse<Blog>>('/blogs/featured'); return unwrapList<Blog>(data).items.map(normalizeBlog); },
+  async trending() { const { data } = await publicGet<Blog[] | PaginatedResponse<Blog>>('/blogs/trending'); return unwrapList<Blog>(data).items.map(normalizeBlog); },
+  async series() { const { data } = await publicGet<ArticleSeries[] | PaginatedResponse<ArticleSeries>>('/series'); return unwrapList<ArticleSeries>(data).items; },
+  async getSeries(slug: string) { const { data } = await publicGet<ArticleSeries>(`/series/${slug}`); return unwrapData<ArticleSeries>(data); },
+  async contributors() { const { data } = await publicGet<Contributor[] | PaginatedResponse<Contributor>>('/contributors'); return unwrapList<Contributor>(data).items; },
+  async getContributor(slug: string) { const { data } = await publicGet<Contributor & { articles?: Blog[] }>(`/contributors/${slug}`); return unwrapData<Contributor & { articles?: Blog[] }>(data); },
   async saved() { const { data } = await api.get('/me/saved-blogs'); return unwrapList<Blog | { blog: Blog }>(data).items.map((item) => normalizeBlog('blog' in item ? item.blog : item)); },
   async history() { const { data } = await api.get('/me/history'); return unwrapList<Blog>(data).items.map(normalizeBlog); },
   async save(id: string) { const { data } = await api.post(`/me/saved-blogs/${id}`); return unwrapData<{ saved: boolean }>(data); },

@@ -15,6 +15,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { PUBLIC_TAXONOMY_CACHE } from '../common/constants/cache-control';
+import { CachePublicRead } from '../common/cache/public-read-cache.interceptor';
 
 @Controller('categories')
 export class CategoriesController {
@@ -22,6 +23,7 @@ export class CategoriesController {
 
   @Public()
   @Get()
+  @CachePublicRead(120)
   @Header('Cache-Control', PUBLIC_TAXONOMY_CACHE)
   list() {
     return this.categoriesService.list();

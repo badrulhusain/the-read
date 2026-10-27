@@ -2,8 +2,10 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Public } from '../common/decorators/public.decorator';
 import { BlogQueryDto } from '../blogs/dto/blog-query.dto';
 import { DiscoveryService } from './discovery.service';
+import { CachePublicRead } from '../common/cache/public-read-cache.interceptor';
 
 @Public()
+@CachePublicRead()
 @Controller()
 export class DiscoveryController {
   constructor(private readonly service: DiscoveryService) {}

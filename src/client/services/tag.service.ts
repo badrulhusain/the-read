@@ -1,4 +1,4 @@
-import { api, unwrapData, unwrapList } from '@/lib/api';
+import { api, publicGet, unwrapData, unwrapList } from '@/lib/api';
 import type { QueryParams } from '@/types/api';
 import type { BlogTag } from '@/types/blog';
 
@@ -9,7 +9,7 @@ export interface TagPayload {
 
 export const tagService = {
   async getTags(params: QueryParams = {}) {
-    const { data } = await api.get('/tags', { params });
+    const { data } = await publicGet<BlogTag[]>('/tags', { params });
     return unwrapList<BlogTag>(data).items;
   },
 

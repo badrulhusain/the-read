@@ -2,6 +2,8 @@ import request from 'supertest';
 import type { INestApplication } from '@nestjs/common';
 import { createRuntime } from './server';
 import { PrismaService } from './database/prisma.service';
+import { PublicReadCache } from './common/cache/public-read-cache';
+import { ReaderService } from './reader/reader.service';
 
 describe('Next.js API runtime', () => {
   let app: INestApplication;
@@ -86,6 +88,40 @@ describe('Next.js API runtime', () => {
       .field('type', 'PROFILE_IMAGE')
       .attach('file', Buffer.from('test'), 'test.png')
       .expect(401);
+  });
+
+  it('shares public reads and invalidates them after successful mutations', async () => {
+    app.get(PublicReadCache).clear();
+    const prisma = app.get(PrismaService);
+    const findMany = jest.spyOn(prisma.blog, 'findMany').mockResolvedValue([]);
+    const count = jest.spyOn(prisma.blog, 'count').mockResolvedValue(0);
+    const subscribe = jest
+      .spyOn(app.get(ReaderService), 'subscribe')
+      .mockResolvedValue({ subscribed: true });
+    try {
+      const responses = await Promise.all(
+        [1, 2, 3].map(() =>
+          request(server).get('/api/blogs?limit=7').expect(200),
+        ),
+      );
+      expect(findMany).toHaveBeenCalledTimes(1);
+      expect(
+        responses.map((response) => response.headers['x-data-cache']),
+      ).toContain('MISS');
+      const hit = await request(server).get('/api/blogs?limit=7').expect(200);
+      expect(hit.headers['x-data-cache']).toBe('HIT');
+      await request(server)
+        .post('/api/newsletter/subscribe')
+        .send({ email: 'reader@example.test' })
+        .expect(201);
+      await request(server).get('/api/blogs?limit=7').expect(200);
+      expect(findMany).toHaveBeenCalledTimes(2);
+    } finally {
+      findMany.mockRestore();
+      count.mockRestore();
+      subscribe.mockRestore();
+      app.get(PublicReadCache).clear();
+    }
   });
 
   it('returns JSON for unknown API routes', async () => {

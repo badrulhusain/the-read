@@ -1,10 +1,10 @@
-import { config } from 'dotenv';
+import { loadEnvConfig } from '@next/env';
 import { resolve } from 'node:path';
 import { PrismaPg } from '@prisma/adapter-pg';
 import * as bcrypt from 'bcrypt';
 import { PrismaClient, Role, UserStatus } from '../src/generated/prisma/client';
 
-config({ path: resolve(__dirname, '../../../.env'), quiet: true });
+loadEnvConfig(resolve(__dirname, '../../..'), process.env.NODE_ENV !== 'production');
 
 const connectionString = process.env.DATABASE_URL;
 

@@ -25,6 +25,7 @@ import { Public } from '../common/decorators/public.decorator';
 import { Roles } from '../common/decorators/roles.decorator';
 import { PUBLIC_CONTENT_CACHE } from '../common/constants/cache-control';
 import { Throttle } from '@nestjs/throttler';
+import { CachePublicRead } from '../common/cache/public-read-cache.interceptor';
 import {
   AutosaveDraftDto,
   CreateDraftDto,
@@ -44,6 +45,7 @@ export class BlogsController {
   @Public()
   @Throttle({ default: { ttl: 60000, limit: 30 } })
   @Get()
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   listPublished(@Query() query: BlogQueryDto) {
     return this.blogsService.listPublished(query);
@@ -135,6 +137,7 @@ export class BlogsController {
 
   @Public()
   @Get('featured')
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   featured(@Query() query: BlogQueryDto) {
     return this.blogsService.listPublished(query);
@@ -142,6 +145,7 @@ export class BlogsController {
 
   @Public()
   @Get('trending')
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   trending(@Query() query: BlogQueryDto) {
     return this.blogsService.listTrending(query);
@@ -149,6 +153,7 @@ export class BlogsController {
 
   @Public()
   @Get('id/:id')
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   getPublishedById(@Param('id') id: string) {
     return this.blogsService.getPublishedById(id);
@@ -156,6 +161,7 @@ export class BlogsController {
 
   @Public()
   @Get(':slug/related')
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   getRelated(@Param('slug') slug: string) {
     return this.blogsService.getRelatedBlogs(slug);
@@ -163,6 +169,7 @@ export class BlogsController {
 
   @Public()
   @Get(':slug')
+  @CachePublicRead()
   @Header('Cache-Control', PUBLIC_CONTENT_CACHE)
   getBySlug(@Param('slug') slug: string) {
     return this.blogsService.getPublishedBySlug(slug);

@@ -20,6 +20,7 @@ import { SubmissionsModule } from './submissions/submissions.module';
 import { ReaderModule } from './reader/reader.module';
 import { DiscoveryModule } from './discovery/discovery.module';
 import { MaintenanceModule } from './maintenance/maintenance.module';
+import { PublicReadCache } from './common/cache/public-read-cache';
 
 @Module({
   imports: [
@@ -44,6 +45,7 @@ import { MaintenanceModule } from './maintenance/maintenance.module';
     MaintenanceModule,
   ],
   providers: [
+    PublicReadCache,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

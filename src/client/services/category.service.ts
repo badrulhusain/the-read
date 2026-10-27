@@ -1,4 +1,4 @@
-import { api, unwrapData, unwrapList } from '@/lib/api';
+import { api, publicGet, unwrapData, unwrapList } from '@/lib/api';
 import type { QueryParams } from '@/types/api';
 import type { BlogCategory } from '@/types/blog';
 
@@ -10,7 +10,7 @@ export interface CategoryPayload {
 
 export const categoryService = {
   async getCategories(params: QueryParams = {}) {
-    const { data } = await api.get('/categories', { params });
+    const { data } = await publicGet<BlogCategory[]>('/categories', { params });
     return unwrapList<BlogCategory>(data).items;
   },
 

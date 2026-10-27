@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { AxiosError } from 'axios';
+import type { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
 import toast from 'react-hot-toast';
 import type { ApiErrorBody, PaginatedResponse } from '@/types/api';
 
@@ -11,6 +11,19 @@ export const api = axios.create({
   baseURL,
   timeout: 15000,
 });
+
+const publicRequests = new Map<string, Promise<AxiosResponse<unknown>>>();
+
+// Share simultaneous public reads (including Strict Mode's development replay).
+// Settled results are removed, so navigating back still fetches fresh content.
+export function publicGet<T = unknown>(url: string, config?: Pick<AxiosRequestConfig, 'params'>) {
+  const key = api.getUri({ url, ...config });
+  const existing = publicRequests.get(key);
+  if (existing) return existing as Promise<AxiosResponse<T>>;
+  const request = api.get<T>(url, config).finally(() => publicRequests.delete(key));
+  publicRequests.set(key, request);
+  return request;
+}
 
 export const getAccessToken = () => localStorage.getItem(TOKEN_STORAGE_KEY);
 
